@@ -1,0 +1,14 @@
+upstream {{ cloud_server_name }} {
+  {% for host in groups['web'] %}
+	server {{ host }}:{{ cloud_server_port }};
+  {% endfor %}
+}
+
+server {
+	listen {{ cloud_proxy_port }};
+	server_name {{ cloud_server_name }};
+	location / {
+		proxy_pass http://{{ cloud_server_name }};
+		include proxy_params;
+	}
+}

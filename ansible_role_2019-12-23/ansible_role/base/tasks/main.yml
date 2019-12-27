@@ -1,0 +1,91 @@
+- name: create group
+  group:
+    name: www
+    gid: 666
+
+- name: create user
+  user:
+    name: www
+    uid: '666'
+    group: '666'
+    create_home: no
+    shell: /sbin/nologin
+
+- name: Disable Firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Disable Selinux
+  selinux:
+    state: disabled
+
+- name: Create YUM_Repository Epel
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: http://mirrors.aliyun.com/epel/7/$basearch
+    gpgcheck: no
+
+- name: Create YUM_Repository Base
+  yum_repository:
+    name: base
+    description: BASE YUM repo
+    baseurl: http://mirrors.aliyun.com/centos/$releasever/os/$basearch/
+    gpgcheck: no
+
+- name: Create YUM_Repository Nginx
+  yum_repository:
+    name: nginx
+    description: Nginx YUM repo
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: no
+  when: ( ansible_hostname is match ('web*') ) or 
+        ( ansible_hostname is match ('lb*') )
+
+- name: Create YUM_Repository PHP
+  yum_repository:
+    name: php
+    description: PHP YUM repo
+    baseurl: 
+    mirrorlist: http://cdn.remirepo.net/enterprise/7/php71/mirror
+    gpgcheck: no
+  when: ( ansible_hostname is match ('web*') )
+
+- name: Installed Packages All
+  yum:
+    name: "{{ base_packages }}"
+  vars:
+    base_packages:
+      - nfs-utils
+      - rsync
+      - wget
+      - unzip
+      - glances
+      - lrzsz
+      - vim
+      - net-tools
+      - bash-completion
+      - tree
+      - MySQL-python
+      - mariadb
+  ignore_errors: yes
+
+- name: Changed SSH Configure
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify: Restart SSH Server
+
+- name: Set sysctl file limiits
+  pam_limits:
+    domain: '*'
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  loop:
+      - { limit_type: 'soft',limit_item: 'nofile', value: '65535' }
+      - { limit_type: 'hard',limit_item: 'nofile', value: '65535' }
+      - { limit_type: 'soft',limit_item: 'nproc', value: '102400' }
+      - { limit_type: 'hard',limit_item: 'nproc', value: '102400' }

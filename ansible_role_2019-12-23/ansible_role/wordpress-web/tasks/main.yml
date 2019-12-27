@@ -1,0 +1,36 @@
+- name: Create Nginx VirtHost Configure
+  template:
+    src: blog.oldxu.com.conf.j2
+    dest: /etc/nginx/conf.d/blog.oldxu.com.conf
+  notify: Restart Nginx Server
+
+- name: Create Wordpress Directory
+  file:
+    path: "{{ blog_code_path }}"
+    state: directory
+    owner: "{{ web_process_user }}"
+    group: "{{ web_process_group }}"
+    recurse: yes
+
+- name: Copy Wordpress Code
+  unarchive:
+    src: wordpress.zip
+    dest: "{{ blog_code_path }}"
+    copy: yes
+    owner: "{{ web_process_user }}"
+    group: "{{ web_process_group }}"
+    creates: "{{ blog_code_path }}/wp-config.php"
+
+- name: Push Wordpress Sql File
+  copy:
+    src: wordpress.sql
+    dest: /tmp/wordpress.sql
+
+- name: Import Wordpress Sql
+  mysql_db:
+    login_host: "{{ mariadb_master }}"
+    login_user: all
+    login_password: oldxu.com
+    name: wordpress
+    state: import
+    target: /tmp/wordpress.sql

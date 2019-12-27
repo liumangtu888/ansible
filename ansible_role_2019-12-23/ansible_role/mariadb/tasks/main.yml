@@ -1,0 +1,43 @@
+- name: Installed Mariadb Server
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - mariadb-server
+      - mariadb
+      - MySQL-python
+
+- name: Configure Mariadb Server
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+
+- name: Systemd Mariadb Server
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+
+- name: Create  Dtabase 
+  mysql_db:
+    login_user: root
+    login_password: oldxu.com
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wordpress
+    - wecenter
+    - zrlog
+
+- name: Create Remote User name 'all' and password 'oldxu.com' with all database privileges
+  mysql_user:
+    login_user: root
+    login_password: oldxu.com
+    name: all
+    host: '%'
+    password: oldxu.com
+    priv: '*.*:ALL'
+    state: present
+

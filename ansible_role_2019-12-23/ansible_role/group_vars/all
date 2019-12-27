@@ -1,0 +1,57 @@
+#php packages
+
+packages:
+  - nginx
+  - php71w
+  - php71w-cli
+  - php71w-common
+  - php71w-devel
+  - php71w-embedded
+  - php71w-gd
+  - php71w-mbstring
+  - php71w-pdo
+  - php71w-xml
+  - php71w-fpm
+  - php71w-mysqlnd
+  - php71w-opcache
+  - php71w-mcrypt
+  - php71w-pecl-memcached
+  - php71w-pecl-mongodb
+  - php71w-pecl-redis
+  - php71w-pecl-zip
+  - php71w-bcmath
+
+# kod web
+redis_server_ip: 172.16.1.51
+redis_server_port: 6379
+web_process_user: www
+web_process_group: www
+cloud_server_name: ansible.oldxu.com
+cloud_server_port: 80
+cloud_code_path: /code/ansible
+# kod proxy
+cloud_proxy_port: 80
+
+#wordpress
+blog_server_name: blog.oldxu.com
+blog_server_port: 80
+blog_code_path: /code/wordpress
+
+#wordpress-proxy
+blog_proxy_port: 80
+blog_proxy_https_port: 443
+ssl_certifi: /etc/nginx/ssl_key/server.crt
+ssl_certifi_key: /etc/nginx/ssl_key/server.key
+
+
+#mysql
+mariadb_master: 172.16.1.51
+
+
+
+# nfs
+nfs_wordpress: /data/wordpress
+nfs_wecenter: /data/wecenter
+nfs_zrlog: /data/zrlog
+nfs_share_ip: 172.16.1.0/24
+

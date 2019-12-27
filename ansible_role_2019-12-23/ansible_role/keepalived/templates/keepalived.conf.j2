@@ -1,0 +1,23 @@
+global_defs {
+         router_id {{ ansible_hostname }}
+  }
+  
+  vrrp_instance VIP_1 {
+{% if ansible_hostname == "lb01" %}
+     state MASTER
+      priority 150
+{% elif ansible_hostname == "lb02" %}
+     state BACKUP
+      priority 100
+{% endif %}
+      interface eth0
+      virtual_router_id 1
+      advert_int 1
+      authentication {
+          auth_type PASS
+          auth_pass 1111
+      }
+      virtual_ipaddress {
+		10.0.0.3
+      }
+  }

@@ -1,0 +1,23 @@
+- hosts: all
+  roles:
+    - role: base
+
+- hosts: db
+  roles:
+    - role: redis 
+    - role: mariadb
+
+- hosts: nfs
+  roles:
+    - role: nfs
+
+- hosts: web
+  roles:
+    - role: wordpress-web
+    - role: kodcloud-web
+
+- hosts: lb
+  roles:
+    - role: keepalived
+    - role: wordpress-proxy
+    - role: kodcloud-proxy

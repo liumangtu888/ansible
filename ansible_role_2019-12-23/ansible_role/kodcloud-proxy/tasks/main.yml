@@ -1,0 +1,9 @@
+- name: Create Nginx Proxy  VirtHost Configure
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: proxy_params.j2 , dest: /etc/nginx/proxy_params }
+    - { src: proxy_ansible.oldxu.com.conf.j2 , dest: /etc/nginx/conf.d/proxy_ansible.oldxu.com.conf }
+  notify: Restart Nginx Server
+

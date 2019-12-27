@@ -1,0 +1,22 @@
+- name: Create Nginx VirtHost Configure
+  template:
+    src: ansible.oldxu.com.conf.j2
+    dest: /etc/nginx/conf.d/ansible.oldxu.com.conf
+  notify: Restart Nginx Server
+
+- name: Create Cloud Directory
+  file:
+    path: "{{ cloud_code_path }}"
+    state: directory
+    owner: "{{ web_process_user }}"
+    group: "{{ web_process_group }}"
+    recurse: yes
+
+- name: Copy Cloud Code
+  unarchive:
+    src: kodexplorer4.40.zip
+    dest: "{{ cloud_code_path }}"
+    copy: yes
+    owner: "{{ web_process_user }}"
+    group: "{{ web_process_group }}"
+    creates: "{{ cloud_code_path }}/index.php"

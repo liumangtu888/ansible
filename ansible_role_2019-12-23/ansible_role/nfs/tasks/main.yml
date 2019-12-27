@@ -1,0 +1,26 @@
+- name: Configure NFS Server
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart NFS Server
+
+- name: Create NFS Share Directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ web_process_user }}"
+    group: "{{ web_process_group }}"
+    recurse: yes
+  loop:
+    - "{{ nfs_wordpress }}"
+    - "{{ nfs_wecenter }}"
+    - "{{ nfs_zrlog }}"
+
+- name: Systemd NFS Server
+  systemd:
+    name: nfs
+    state: started
+    enabled: yes
